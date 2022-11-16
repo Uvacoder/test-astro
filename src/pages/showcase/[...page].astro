@@ -1,0 +1,58 @@
+---
+import { getShowcase } from '../../data/showcase/index.js'
+import CardGrid from '../../components/CardGrid.astro'
+import Pagination from '../../components/Pagination.astro'
+import ShowcaseCard from '../../components/ShowcaseCard.astro'
+import Layout from '../../layouts/Catalog.astro'
+import shareImage from '../../assets/showcase/social.jpg'
+
+export async function getStaticPaths({ paginate }) {
+    const showcase = await getShowcase()
+
+    return paginate(showcase, { pageSize: 36 })
+}
+
+const title = 'Showcase'
+const description =
+    "Explore what's possible with Astro and get inspired for your next project."
+
+const { page: { data: showcase, currentPage, lastPage, total } } = Astro.props
+
+console.log(`${currentPage} / ${lastPage} (${total})`)
+
+const pages = Array.from({ length: lastPage }, (_, i) => ({
+    href: `/showcase/${i + 1}`,
+    page: i + 1
+}))
+
+const next = currentPage < lastPage ? `/showcase/${currentPage + 1}` : undefined
+const previous = currentPage > 1 ? `/showcase/${currentPage - 1}` : undefined
+---
+
+<Layout
+    title={title}
+    description={description}
+    image={shareImage}
+    collections={[]}
+    current={undefined}
+    searchable={false}
+>
+    <Fragment slot="cards">
+        <CardGrid class="sm:grid-flow-row-dense">
+            {showcase.map((site) => <ShowcaseCard site={site} />)}
+        </CardGrid>
+
+        <Pagination items={pages} next={next} previous={previous} currentPage={currentPage} />
+    </Fragment>
+
+    <Fragment slot="info">
+        <a
+            href="https://github.com/withastro/astro.build/issues/new/choose"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="underline subtle"
+            >Submit your site.</a>
+        Questions about building your own themes? Join our community on
+        <a href="https://astro.build/chat" class="underline subtle">Discord!</a>
+    </Fragment>
+</Layout>

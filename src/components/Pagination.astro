@@ -1,0 +1,67 @@
+---
+import { Icon } from 'astro-icon'
+
+export interface Props {
+    items: {
+        page: number
+        href: string
+    }[],
+    currentPage: number
+    previous?: string
+    next?: string
+}
+
+const { items, currentPage, next, previous } = Astro.props
+
+console.log(Astro.props)
+---
+
+<nav class="flex items-center justify-between border-b border-neutral-200 px-4 sm:px-0">
+    {previous && (
+        <div class="prev">
+            <a href={previous} class=" pb-4 pr-1 text-neutral-500 hover:border-neutral-300 hover:text-neutral-700">
+                <Icon name='heroicons-outline:arrow-narrow-left' size={20} class="mr-3 text-neutral-400" />
+                Previous
+            </a>
+        </div>
+    )}
+    <div class="hidden md:-mb-px md:flex">
+        {items.map(({href, page}) => (
+            <a href={href} aria-current={page === currentPage ? 'page' : undefined}>{page}</a>
+        ))}
+    </div>
+    {next && (
+        <div class="next justify-end">
+        <a href={next} class=" pb-4 pl-1 text-neutral-500 hover:border-neutral-300 hover:text-neutral-700">
+            Next
+            <Icon name='heroicons-outline:arrow-narrow-right' size={20} class="ml-3 text-gray-400" />
+        </a>
+        </div>
+    )}
+  </nav>
+
+  <style>
+    a {
+        @apply inline-flex items-center border-b-2 text-sm font-medium;
+    }
+
+    .prev, .next {
+        @apply -mb-px flex w-0 flex-1;
+    }
+
+    :is(.prev, .next) a {
+        @apply border-transparent;
+    }
+
+    .hidden a {
+        @apply px-4 pb-4;
+    }
+
+    .hidden a:not([aria-current=page]) {
+        @apply border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300;
+    }
+
+    .hidden a[aria-current=page] {
+        @apply border-primary-500 text-primary-600;
+    }
+  </style>
